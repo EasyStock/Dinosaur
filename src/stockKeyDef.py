@@ -160,6 +160,26 @@ def keyConverter(key):
     raise Exception('key not found!')
 
 
+def keyConverterToShort(key):
+    for item in stockKeyWordsMap:
+        if item[0] == key:
+            return item[0]
+        elif item[1] == key:
+            return item[0]
+        else:
+            continue
+    raise Exception('key not found!')
+
+def keyConverterToLong(key):
+    for item in stockKeyWordsMap:
+        if item[0] == key:
+            return item[1]
+        elif item[1] == key:
+            return item[1]
+        else:
+            continue
+    raise Exception('key not found!')
+
 def toShortNameDict():
     res = {}
     for item in stockKeyWordsMap:
