@@ -10,7 +10,7 @@ import sys
 import os
 sys.path.append(os.getcwd()) 
 
-import stockKeyDef as sk
+import stockInfoFormatter.stockKeyDef as sk
 
 def ValidateListDuplicate(destList):
     ls = list(set(destList))
