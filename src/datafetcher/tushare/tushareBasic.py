@@ -7,8 +7,6 @@
 @Contact :   yuchonghuang@126.com
 '''
 
-import tushare as ts
-from tushareToken import MY_TOKEN
 import datetime
 
 def fetchTradingDayTillNow(pro,start_date='20150101'):
@@ -23,11 +21,6 @@ def fetchTradingDayTillNow(pro,start_date='20150101'):
     return trading_days_tillNow
 
 def fetchStockBasicInfoTillNow(pro):
-    data = pro.stock_basic(exchange='', list_status='L', fields='ts_code,symbol,name,fullname,area,industry,list_date,is_hs')
-    print(data)
-    data.to_excel('/tmp/aa.xlsx',encoding="utf_8_sig", index=False)
-
-if __name__ == "__main__":
-    pro = ts.pro_api(MY_TOKEN)
-    fetchTradingDayTillNow(pro)
-    fetchStockBasicInfoTillNow(pro)
+    columns = ('ts_code','symbol','name','fullname','area','industry','list_date','is_hs')
+    data = pro.stock_basic(exchange='', list_status='L', fields=columns)#'ts_code,symbol,name,fullname,area,industry,list_date,is_hs')
+    return data
