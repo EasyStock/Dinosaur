@@ -23,7 +23,7 @@ class CReaderMgr(object):
         con.execute(CREATE_STOCK_TABLE_MARKET_HOT)
         con.commit()
 
-    def InsertDataWithFiles(self,fileNames,con):
+    def InsertDataWithFiles(self,fileNames,con,destFolder):
         self.createTablesIfNeeded(con)
         
         sql = CReader_ths.getInsertedFileNamesSQL()
@@ -35,21 +35,22 @@ class CReaderMgr(object):
                 self.logger.warning('file:%s already inserted !' %(filename))
                 continue
             reader = CReader_ths()
-            reader.InsertData(filename,con)
-            sql1 = CReader_ths.insertFileNameIntoSQL(filename)
-            con.execute(sql1)
-            con.commit()
+            reader.InsertData(filename,con,destFolder)
 
-    def InsertDataWithFile(self,fileName,dbName):
+
+    def InsertDataWithFile(self,fileName,dbName,destFolder):
         with sqlite3.connect(dbName) as con:
             self.createTablesIfNeeded(con)
             reader = CReader_ths()
-            reader.InsertData(fileName, con)
+            reader.InsertData(fileName, con,destFolder)
             reader.insertFileNameInto(fileName)
 
-    def InsertDataWithFolder(self, srcFolder, dbName):
+    def InsertDataWithFolder(self, srcFolder, dbName,destFolder):
         fileList = os.listdir(srcFolder)
         allFileNames = []
+        if os.path.exists(destFolder) == False:
+            os.makedirs(destFolder)
+
         for filename in fileList:
             if filename.find('.xls') == -1:
                 continue
@@ -57,7 +58,7 @@ class CReaderMgr(object):
             allFileNames.append(fullName)
         
         with sqlite3.connect(dbName) as con:
-            self.InsertDataWithFiles(allFileNames,con)
+            self.InsertDataWithFiles(allFileNames,con,destFolder)
 
 
     def UpdateDataWithFiles(self,fileNames,con):

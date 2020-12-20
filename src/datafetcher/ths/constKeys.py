@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS %s (
     raito_gt_bollup NUMERIC DEFAULT (0),
     raito_le_bolldown NUMERIC DEFAULT (0),
     raito_gt_rsi80 NUMERIC DEFAULT (0),
-    raito_ls_rsi80 NUMERIC DEFAULT (0),
+    raito_ls_rsi20 NUMERIC DEFAULT (0),
     PRIMARY KEY(date,market)
 );
 '''%(KEY_TABLE_NAME_THS_MARKET_HOT)

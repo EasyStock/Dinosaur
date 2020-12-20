@@ -7,7 +7,7 @@
 @Contact :   yuchonghuang@126.com
 '''
 
-from os import read
+import os
 import re
 import pandas as pd
 import logging
@@ -69,16 +69,22 @@ class CReader_ths(object):
 
     def translateTHSTo(self,filename):
         self.fileName = filename
-        dfs = pd.read_html(filename, encoding='utf-8',header=0)
-        df = dfs[0]
-        retMap = self.keywordTranslator(df)
-        date = retMap['open'].split(')')[1].replace('.','-')
-        self.dataFrame = pd.DataFrame(columns=retMap.keys())
-        for key in retMap:
-            self.dataFrame[key] = df[retMap[key]]
-        self.dataFrame['date'] = date
-        self.date = date
-        self.addMarketInfo()
+        if filename.find('.xlsx') != -1:
+            self.dataFrame = pd.read_excel(filename)
+            self.date = self.dataFrame['date'][0]
+        elif filename.find('.xls') != -1:
+            dfs = pd.read_html(filename, encoding='utf-8',header=0)
+            df = dfs[0]
+            retMap = self.keywordTranslator(df)
+            date = retMap['open'].split(')')[1].replace('.','-')
+            self.dataFrame = pd.DataFrame(columns=retMap.keys())
+            for key in retMap:
+                self.dataFrame[key] = df[retMap[key]]
+            self.dataFrame['date'] = date
+            self.date = date
+            self.addMarketInfo()
+        else:
+            raise Exception('read Exception!')
 
     @staticmethod
     def getInsertedFileNamesSQL():
@@ -95,7 +101,7 @@ class CReader_ths(object):
             return
         dfNew = self.dataFrame.copy()
         dfNew = dfNew.set_index('sid')
-        cursor = con.cursor()
+
         dfNew.to_sql(KEY_TABLE_NAME_THS, con, if_exists="append")
         self.logger.info('insert file:%s to DB finished: total: %s X %s'%(self.fileName, dfNew.shape[0],dfNew.shape[1]))
 
@@ -104,7 +110,7 @@ class CReader_ths(object):
         if totalSize == 0:
             return {key:0.0}
         res = df[df[column1] >= df[column2]]
-        ratio= round(float(1.0*res.shape[0]/df.shape[0]),2)
+        ratio= round(float(1.0*res.shape[0]/df.shape[0]),3)
         return {
             key:ratio
         }
@@ -114,7 +120,7 @@ class CReader_ths(object):
         if totalSize == 0:
             return {key:0.0}
         res = df[df[column1] >= constValue]
-        ratio= round(float(1.0*res.shape[0]/df.shape[0]),2)
+        ratio= round(float(1.0*res.shape[0]/df.shape[0]),3)
         return {
             key:ratio
         }
@@ -124,7 +130,7 @@ class CReader_ths(object):
         if totalSize == 0:
             return {key:0.0}
         res = df[df[column1] <= constValue]
-        ratio= round(float(1.0*res.shape[0]/df.shape[0]),2)
+        ratio= round(float(1.0*res.shape[0]/df.shape[0]),3)
         return {
             key:ratio
         }
@@ -145,7 +151,7 @@ class CReader_ths(object):
         res.update(self._GetRatioOf(df1, 'close', 'bollu', 'raito_gt_bollup'))
         res.update(self._GetRatioOf(df1, 'bolll', 'close', 'raito_le_bolldown'))
         res.update(self._GetRatioOfGreateThanConst(df1, 'rsi6', 80, 'raito_gt_rsi80'))
-        res.update(self._GetRatioOfGreateLessConst(df1, 'rsi6', 20, 'raito_le_bolldown'))
+        res.update(self._GetRatioOfGreateLessConst(df1, 'rsi6', 20, 'raito_ls_rsi20'))
         return res
 
     def _InsertMarketHotData(self,con, df,banKuaiName):
@@ -220,12 +226,15 @@ class CReader_ths(object):
             con.execute(sql)
         self.logger.info('update file:%s to DB finished: total: %s X %s'%(self.fileName, dfNew.shape[0],dfNew.shape[1]))
 
-    def InsertData(self,fileName,con):
+    def InsertData(self,fileName,con,destFolder):
         self.logger.info('begin: [%s]'%(fileName))
         try:
             self.translateTHSTo(fileName)
             self._insertToDB(con)
             self._insertMarketHotDataToDB(con)
+            sql1 = CReader_ths.insertFileNameIntoSQL(fileName)
+            con.execute(sql1)
+            self.SaveToFile(destFolder)
             con.commit()
             self.logger.info('end: [%s]'%(fileName))
         except Exception as e:
@@ -246,6 +255,15 @@ class CReader_ths(object):
             self.logger.error('exception: [%s],exception:%s'%(fileName,e))
     
 
+    def SaveToFile(self,folder):
+        if self.dataFrame is None or self.date is None:
+            return
+        
+        fileName = '%s.xlsx'%(self.date)
+        fullPath = os.path.join(folder,fileName)
+        df = self.dataFrame.copy()
+        df = df.set_index('sid')
+        df.to_excel(fullPath,encoding='utf-8',index = True)
 
 
 
