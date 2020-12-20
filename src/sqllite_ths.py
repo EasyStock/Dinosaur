@@ -23,9 +23,8 @@ def StartToInitLogger():
 
 if __name__ == "__main__":
     StartToInitLogger()
-    destfolder = '/Volumes/Data/Code/github/Dinosaur/data'
+    dbName = '/Volumes/Data/Code/github/Dinosaur/data/all_data_ths.db'
     srcFolder = '/Volumes/Data/Code/github/股票'
-    dbName = '/tmp/all_data_ths.db'
     mgr = CReaderMgr()
     mgr.InsertDataWithFolder(srcFolder,dbName)
     #mgr.UpdateDataWithFolder(srcFolder,dbName)

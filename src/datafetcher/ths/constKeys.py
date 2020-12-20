@@ -35,6 +35,7 @@ COLUMNS_MAP_THS = {
 
 KEY_TABLE_NAME_THS = 'AllDailyDataTHS'
 KEY_TABLE_NAME_THS_INSERTED = 'InsertFiles'
+KEY_TABLE_NAME_THS_MARKET_HOT = 'MarketHot'
 
 CREATE_STOCK_TABLE_ALL_DATA = '''
 CREATE TABLE IF NOT EXISTS %s (
@@ -61,6 +62,8 @@ CREATE TABLE IF NOT EXISTS %s (
     rsi6      NUMERIC DEFAULT ( -9999),
     rsi12     NUMERIC DEFAULT ( -9999),
     rsi24     NUMERIC DEFAULT ( -9999),
+    market    TEXT,
+    otherInfo TEXT,
     PRIMARY KEY(date,sid)
 );
 '''%(KEY_TABLE_NAME_THS)
@@ -71,3 +74,29 @@ CREATE TABLE IF NOT EXISTS %s (
     PRIMARY KEY(fileName)
 );
 '''%(KEY_TABLE_NAME_THS_INSERTED)
+
+
+KW_ZHUBAN = "主板"
+KW_KECHUANG = "科创板"
+KW_CHUANG_YE = "创业板"
+KE_ZHONGXIAO = "中小板"
+
+CREATE_STOCK_TABLE_MARKET_HOT = '''
+CREATE TABLE IF NOT EXISTS %s (
+    date        TEXT  NOT NULL,
+    market      TEXT  NOT NULL,
+    total       NUMERIC DEFAULT (0),
+    raito_gt_ma5   NUMERIC DEFAULT (0),
+    raito_gt_ma10  NUMERIC DEFAULT (0),
+    raito_gt_ma20  NUMERIC DEFAULT (0),
+    raito_gt_ma30  NUMERIC DEFAULT (0),
+    raito_gt_ma60  NUMERIC DEFAULT (0),
+    raito_gt_ma120 NUMERIC DEFAULT (0),
+    raito_gt_ma240 NUMERIC DEFAULT (0),
+    raito_gt_bollup NUMERIC DEFAULT (0),
+    raito_le_bolldown NUMERIC DEFAULT (0),
+    raito_gt_rsi80 NUMERIC DEFAULT (0),
+    raito_ls_rsi80 NUMERIC DEFAULT (0),
+    PRIMARY KEY(date,market)
+);
+'''%(KEY_TABLE_NAME_THS_MARKET_HOT)

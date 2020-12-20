@@ -10,7 +10,7 @@ import sqlite3
 import os
 import logging
 
-from datafetcher.ths.constKeys import CREATE_STOCK_TABLE_ALL_DATA,CREATE_STOCK_TABLE_INSERT_FILES
+from datafetcher.ths.constKeys import CREATE_STOCK_TABLE_ALL_DATA,CREATE_STOCK_TABLE_INSERT_FILES,CREATE_STOCK_TABLE_MARKET_HOT
 from datafetcher.ths.reader import CReader_ths
 
 class CReaderMgr(object):
@@ -20,6 +20,7 @@ class CReaderMgr(object):
     def createTablesIfNeeded(self,con):
         con.execute(CREATE_STOCK_TABLE_ALL_DATA)
         con.execute(CREATE_STOCK_TABLE_INSERT_FILES)
+        con.execute(CREATE_STOCK_TABLE_MARKET_HOT)
         con.commit()
 
     def InsertDataWithFiles(self,fileNames,con):
