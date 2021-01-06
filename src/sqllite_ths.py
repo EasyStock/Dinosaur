@@ -13,6 +13,9 @@ import datetime
 import os
 
 from datafetcher.ths.readerMgr import CReaderMgr
+from Bear.MakrketingThremometer import CMakrketingThremometer
+
+dbName = '/Volumes/Data/Code/github/Dinosaur/data/all_data_ths.db'
 
 def StartToInitLogger():
     folder = '/tmp/'
@@ -21,14 +24,27 @@ def StartToInitLogger():
     logger = InitLogger(fullPath)
     return logger
 
-if __name__ == "__main__":
-    StartToInitLogger()
-    dbName = '/Volumes/Data/Code/github/Dinosaur/data/all_data_ths111.db'
+def TestingMakrketingTemperature(dbName):
+    market = CMakrketingThremometer()
+    market.CalcMakrketingTemperature(dbName)
+
+def StoreDailyToDB(dbName):
     srcFolder = '/Volumes/Data/Code/github/股票'
     destFolder = '/Volumes/Data/Code/github/AA'
     mgr = CReaderMgr()
-    #mgr.InsertDataWithFolder(srcFolder,dbName,destFolder)
-    mgr.InsertDataWithFolder(destFolder,dbName,'/tmp/AAA')
+    mgr.InsertDataWithFolder(srcFolder,dbName,destFolder)
+
+if __name__ == "__main__":
+    StartToInitLogger()
+    StoreDailyToDB(dbName)
+    TestingMakrketingTemperature(dbName)
+    
+    # srcFolder = '/Volumes/Data/Code/github/股票'
+    # destFolder = '/Volumes/Data/Code/github/AA'
+    # mgr = CReaderMgr()
+    # mgr.InsertDataWithFolder(srcFolder,dbName,destFolder)
+    #mgr.InsertDataWithFolder(destFolder,dbName,'/tmp/AAA')
     #mgr.UpdateDataWithFolder(srcFolder,dbName)
+
 
 

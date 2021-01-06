@@ -48,7 +48,20 @@ def Test():
     dfMa10 = dfNew[dfNew['rsi(rsi6值)2020.12.18'] <= 20]
     print(1.0*dfMa10.shape[0] / df.shape[0])
 
+def TestNewHighFilter():
+    sql = '''SELECT * FROM AllDailyDataTHS where sid = '300618.SZ' '''
+    import sqlite3
+    import pandas as pd
+    from Bear.filters.NewHigherFilter import CNewHigherFilter
+    with sqlite3.connect('/Volumes/Data/Code/github/Dinosaur/data/all_data_ths.db') as conn:
+        df = pd.read_sql_query(sql, conn)
+        newHighFilter = CNewHigherFilter()
+        res = newHighFilter.doFilter(df)
+        print(res)
+        
+
 if __name__ == "__main__":
     StartToInitLogger()
     #GetSplitedDataFrame(180)
-    Test()
+    # Test()
+    TestNewHighFilter()
